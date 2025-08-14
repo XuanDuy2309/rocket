@@ -1,0 +1,80 @@
+# =========================
+# Laravel
+# =========================
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.phpunit.result.cache
+Homestead.yaml
+Homestead.json
+
+# Laravel IDE Helper files
+/.phpstorm.meta.php
+/_ide_helper.php
+/_ide_helper_models.php
+
+# =========================
+# Composer
+# =========================
+composer.lock
+
+# =========================
+# Node / React Native (Expo)
+# =========================
+rocket-fe/node_modules
+rocket-fe/ios
+rocket-fe/.expo
+rocket-fe/.expo-shared
+rocket-fe/npm-debug.log*
+rocket-fe/yarn-debug.log*
+rocket-fe/yarn-error.log*
+rocket-fe/package-lock.json
+rocket-fe/expo-debug.log
+
+# Metro bundler cache
+.expo
+.expo-shared
+
+# =========================
+# Docker
+# =========================
+# Docker volumes
+mysql_data
+docker-data/
+.docker/
+
+# Ignore docker build cache
+**/.docker-cache
+**/.dockerignore
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# =========================
+# Logs & temp files
+# =========================
+*.log
+*.cache
+*.tmp
+*.pid
+*.seed
+*.pid.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# IDE / Editor settings
+# =========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
