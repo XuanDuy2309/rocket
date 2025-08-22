@@ -1,0 +1,33 @@
+{
+    "onboarding": {
+        "message": "Rocket not Locket"
+    },
+    "settings": {
+        "about": "Giới thiệu",
+        "app_name": "Tên ứng dụng",
+        "arabic": "Tiếng Ả Rập",
+        "english": "Tiếng Anh",
+        "vi": "Tiếng Việt",
+        "generale": "Chung",
+        "github": "Github",
+        "language": "Ngôn ngữ",
+        "links": "Liên kết",
+        "logout": "Đăng xuất",
+        "more": "Thêm",
+        "privacy": "Chính sách bảo mật",
+        "rate": "Đánh giá",
+        "share": "Chia sẻ",
+        "support": "Hỗ trợ",
+        "support_us": "Ủng hộ chúng tôi",
+        "terms": "Điều khoản dịch vụ",
+        "theme": {
+            "theme_dark": "Tối",
+            "theme_light": "Sáng",
+            "theme_system": "Hệ thống"
+        },
+        "title": "Thiết lập",
+        "version": "Phiên bản",
+        "website": "Website"
+    },
+    "welcome": "Welcome to Rocket"
+}
