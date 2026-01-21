@@ -1,0 +1,11 @@
+{
+  "name": "rocket-frontends",
+  "private": true,
+  "packageManager": "pnpm@10.12.3",
+  "scripts": {
+    "install:all": "pnpm install",
+    "rocket": "pnpm --filter rocket-fe",
+    "sdk:ts": "pnpm --filter @rocket/sdk-ts",
+    "sdk:ui": "pnpm --filter @rocket/sdk-ui"
+  }
+}

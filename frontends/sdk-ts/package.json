@@ -1,0 +1,22 @@
+{
+  "name": "@rocket/sdk-ts",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "*"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.52.1",
+    "axios": "^1.7.5",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/react": "~19.0.14"
+  }
+}

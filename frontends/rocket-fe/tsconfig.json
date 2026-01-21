@@ -5,7 +5,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@env": ["./src/lib/env.js"]
+      "@env": ["./src/lib/env.js"],
+      "@rocket/sdk-ts": ["../sdk-ts/src/index.ts"],
+      "@rocket/sdk-ts/*": ["../sdk-ts/src/*"],
+      "@rocket/sdk-ui": ["../sdk-ui/index.ts"],
+      "@rocket/sdk-ui/*": ["../sdk-ui/src/*"]
     },
     "esModuleInterop": true,
     "checkJs": true

@@ -13,6 +13,7 @@ module.exports = function (api) {
           alias: {
             '@': './src',
             '@env': './src/lib/env.js',
+            'react-native-worklets': 'react-native-worklets-core',
           },
           extensions: [
             '.ios.ts',

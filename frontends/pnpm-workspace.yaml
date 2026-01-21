@@ -1,0 +1,4 @@
+packages:
+  - 'rocket-fe'
+  - 'sdk-ts'
+  - 'sdk-ui'
