@@ -1,14 +1,14 @@
 version: "3.8"
 services:
-  backend:
+  api:
     build:
-      context: ./backend
+      context: ..
       dockerfile: docker/Dockerfile
-    container_name: go_api
+    container_name: locket_api
     ports:
       - "8080:8080"
     env_file:
-      - ./backend/.env.example
+      - ../.env.example
     depends_on:
       - postgres
       - redis
@@ -31,19 +31,5 @@ services:
     ports:
       - "6379:6379"
 
-  minio:
-    image: minio/minio:latest
-    container_name: minio_s3
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
-    ports:
-      - "19000:9000"
-      - "19001:9001"
-    volumes:
-      - minio_data:/data
-
 volumes:
   pg_data:
-  minio_data:
