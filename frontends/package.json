@@ -7,5 +7,21 @@
     "rocket": "pnpm --filter rocket-fe",
     "sdk:ts": "pnpm --filter @rocket/sdk-ts",
     "sdk:ui": "pnpm --filter @rocket/sdk-ui"
+  },
+  "dependencies": {
+    "react-native-css-interop": "0.1.22",
+    "@babel/runtime": "^7.20.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-native-screens": "~4.11.1",
+      "react-native-edge-to-edge": "1.6.0",
+      "react-native-css-interop": "0.1.22"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "react-native-css-interop"
+      ]
+    }
   }
 }
