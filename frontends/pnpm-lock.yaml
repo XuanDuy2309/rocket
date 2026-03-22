@@ -354,9 +354,15 @@ importers:
       react-native:
         specifier: '*'
         version: 0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0)
+      react-native-device-info:
+        specifier: ^15.0.2
+        version: 15.0.2(react-native@0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0))
       react-native-reanimated:
         specifier: ~3.17.5
         version: 3.17.5(@babel/core@7.28.6)(react-native@0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+      react-native-toast-message:
+        specifier: ^2.3.3
+        version: 2.3.3(react-native@0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -5722,6 +5728,11 @@ packages:
       react-native-svg:
         optional: true
 
+  react-native-device-info@15.0.2:
+    resolution: {integrity: sha512-dd71eXG2l3Cwp66IvKNadMTB8fhU3PEjyVddI97sYan+D4bgIAUmgGDhbSOFvHcGavksb2U17kiQYaDiK2WK2g==}
+    peerDependencies:
+      react-native: '*'
+
   react-native-edge-to-edge@1.6.0:
     resolution: {integrity: sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==}
     peerDependencies:
@@ -5798,6 +5809,12 @@ packages:
 
   react-native-svg@15.11.2:
     resolution: {integrity: sha512-+YfF72IbWQUKzCIydlijV1fLuBsQNGMT6Da2kFlo1sh+LE3BIm/2Q7AR1zAAR6L0BFLi1WaQPLfFUC9bNZpOmw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
+  react-native-toast-message@2.3.3:
+    resolution: {integrity: sha512-4IIUHwUPvKHu4gjD0Vj2aGQzqPATiblL1ey8tOqsxOWRPGGu52iIbL8M/mCz4uyqecvPdIcMY38AfwRuUADfQQ==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -13706,6 +13723,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  react-native-device-info@15.0.2(react-native@0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0)):
+    dependencies:
+      react-native: 0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0)
+
   react-native-edge-to-edge@1.6.0(react-native@0.79.6(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
@@ -13822,6 +13843,11 @@ snapshots:
       react: 19.0.0
       react-native: 0.79.6(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0)
       warn-once: 0.1.1
+
+  react-native-toast-message@2.3.3(react-native@0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-native: 0.79.4(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0)
 
   react-native-url-polyfill@2.0.0(react-native@0.79.6(@babel/core@7.28.6)(@types/react@19.0.14)(react@19.0.0)):
     dependencies:
