@@ -1,84 +1,95 @@
 import React from 'react';
-import { View, SafeAreaView, StyleSheet, Text as RNText, Dimensions } from 'react-native';
-import { Button, PolaroidCard, SparkleIcon, CameraIcon, ArrowRightIcon } from '../components';
+import { View, SafeAreaView, StyleSheet, Text as RNText, Image, ScrollView } from 'react-native';
+import { Button } from '../components';
+import { colors } from '../theme/colors';
 
-export const OnboardingScreen = () => {
+interface OnboardingScreenProps {
+    onSignUp?: () => void;
+    onLogin?: () => void;
+}
+
+export const OnboardingScreen = ({ onSignUp, onLogin }: OnboardingScreenProps) => {
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+            >
+                <View style={styles.container}>
+                    <View style={styles.topGlow} />
+                    <View style={styles.bottomGlow} />
 
-                {/* Header Section */}
-                <View style={styles.header}>
-                    <View style={styles.sparkleBackground}>
-                        <SparkleIcon size={32} />
+                    <View style={styles.header}>
+                        <RNText style={styles.brand}>The Living Chronology</RNText>
+
+                        <View style={styles.liveNow}>
+                            <View style={styles.liveIcon}>
+                                <View style={styles.liveIconCore} />
+                            </View>
+                            <RNText style={styles.liveNowText}>LIVE NOW</RNText>
+                        </View>
                     </View>
-                </View>
 
-                {/* Hero Card Section */}
-                <View style={styles.heroSection}>
-                    <View style={styles.heroCard}>
-                        {/* Polaroid Stack */}
-                        <View style={styles.polaroidStack}>
-                            <PolaroidCard
-                                source={{ uri: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=300&auto=format&fit=crop' }}
-                                style={styles.polaroidLeft}
-                                rotation={-6}
-                            />
-                            <PolaroidCard
-                                source={{ uri: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=400&auto=format&fit=crop' }}
-                                style={styles.polaroidCenter}
-                                rotation={0}
-                            />
-                            <PolaroidCard
-                                source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&auto=format&fit=crop' }}
-                                style={styles.polaroidRight}
-                                rotation={6}
-                            />
+                    <View style={styles.heroSection}>
+                        <View style={styles.heroFrame}>
+                            <View style={styles.heroBackdropCard} />
 
-                            {/* Camera Capsule Overlay */}
-                            <View style={styles.cameraCapsule}>
-                                <View style={styles.cameraIconContainer}>
-                                    <CameraIcon size={20} color="black" />
-                                </View>
-                                <View style={styles.capsuleLines}>
-                                    <View style={styles.capsuleLineLong} />
-                                    <View style={styles.capsuleLineShort} />
+                            <View style={styles.heroCard}>
+                                <Image
+                                    source={{ uri: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=300&auto=format&fit=crop' }}
+                                    style={styles.peekImage}
+                                    resizeMode="cover"
+                                />
+
+                                <Image
+                                    source={{ uri: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop' }}
+                                    style={styles.mainImage}
+                                    resizeMode="cover"
+                                />
+
+                                <View style={styles.captionPill}>
+                                    <View style={styles.avatarWrap}>
+                                        <Image
+                                            source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
+                                            style={styles.avatar}
+                                            resizeMode="cover"
+                                        />
+                                    </View>
+                                    <RNText style={styles.captionText}>@linh_anh chia sẻ 2 phút trước</RNText>
                                 </View>
                             </View>
                         </View>
                     </View>
-                </View>
 
-                {/* Text Content Section */}
-                <View style={styles.textContent}>
-                    <RNText style={styles.title}>
-                        <RNText style={styles.whiteText}>Locket is for your{"\n"}</RNText>
-                        best friends.
-                    </RNText>
-                    <RNText style={styles.subtitle}>
-                        See their photos right on your home screen.
-                    </RNText>
-                </View>
-
-                {/* Footer Section: Pagination & Button */}
-                <View style={styles.footer}>
-                    {/* Pagination Dots */}
-                    <View style={styles.pagination}>
-                        <View style={styles.activeDot} />
-                        <View style={styles.dot} />
-                        <View style={styles.dot} />
+                    <View style={styles.textContent}>
+                        <RNText style={styles.title}>
+                            Ghi lại mọi khoảnh khắc,{"\n"}
+                            <RNText style={styles.accentText}>kết nối mọi trái tim</RNText>
+                        </RNText>
+                        <RNText style={styles.subtitle}>
+                            Trải nghiệm dòng thời gian sống động, nơi mỗi kỷ niệm được trân trọng và lan tỏa.
+                        </RNText>
                     </View>
 
-                    {/* Get Started Button */}
-                    <Button
-                        label="Get Started"
-                        variant="primary"
-                        style={styles.fullWidth}
-                        icon={<ArrowRightIcon size={20} color="black" />}
-                    />
+                    <View style={styles.footer}>
+                        <Button
+                            label="Đăng ký"
+                            variant="primary"
+                            style={styles.primaryButton}
+                            onPress={onSignUp}
+                        />
+                        <Button
+                            label="Đăng nhập"
+                            variant="outline"
+                            style={styles.secondaryButton}
+                            onPress={onLogin}
+                        />
+                        <RNText style={styles.footerNote}>THAM GIA CÙNG HƠN 2 TRIỆU NGƯỜI DÙNG</RNText>
+                    </View>
                 </View>
-
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -86,147 +97,205 @@ export const OnboardingScreen = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: colors.background,
+    },
+    scrollView: {
+        flex: 1,
+        backgroundColor: colors.background,
+    },
+    scrollContent: {
+        flexGrow: 1,
     },
     container: {
-        flex: 1,
+        minHeight: '100%',
         paddingHorizontal: 24,
         paddingTop: 16,
         paddingBottom: 40,
-        justifyContent: 'space-between',
+        position: 'relative',
+        overflow: 'hidden',
+    },
+    topGlow: {
+        position: 'absolute',
+        top: -80,
+        right: -40,
+        width: 220,
+        height: 220,
+        borderRadius: 110,
+        backgroundColor: 'rgba(34, 197, 94, 0.18)',
+    },
+    bottomGlow: {
+        position: 'absolute',
+        bottom: 180,
+        left: -60,
+        width: 240,
+        height: 240,
+        borderRadius: 120,
+        backgroundColor: 'rgba(59, 130, 246, 0.16)',
     },
     header: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 16,
+        justifyContent: 'space-between',
+        marginTop: 12,
     },
-    sparkleBackground: {
-        backgroundColor: '#1A1A10',
-        padding: 16,
+    brand: {
+        color: colors.accent,
+        fontSize: 24,
+        fontWeight: '800',
+        letterSpacing: -0.8,
+    },
+    liveNow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    liveIcon: {
+        width: 18,
+        height: 18,
         borderRadius: 999,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.35)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 8,
+    },
+    liveIconCore: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: colors.textSecondary,
+    },
+    liveNowText: {
+        color: colors.textSecondary,
+        fontSize: 12,
+        fontWeight: '600',
+        letterSpacing: 1.8,
     },
     heroSection: {
         alignItems: 'center',
         justifyContent: 'center',
+        marginTop: 24,
+    },
+    heroFrame: {
+        width: '100%',
+        aspectRatio: 0.88,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    heroBackdropCard: {
+        position: 'absolute',
+        top: 6,
+        right: 8,
+        width: '90%',
+        height: '92%',
+        backgroundColor: '#E7E1D7',
+        borderRadius: 34,
     },
     heroCard: {
-        width: '100%',
-        aspectRatio: 4 / 5,
-        backgroundColor: '#3D2F28',
-        borderRadius: 48,
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: '94%',
+        height: '96%',
+        backgroundColor: colors.card,
+        borderRadius: 34,
         overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 20,
-        elevation: 10,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 18 },
+        shadowOpacity: 0.28,
+        shadowRadius: 28,
+        elevation: 16,
     },
-    polaroidStack: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+    peekImage: {
+        position: 'absolute',
+        right: -38,
+        top: 18,
+        width: 138,
+        height: '92%',
+        borderRadius: 28,
+        opacity: 0.88,
+    },
+    mainImage: {
         width: '100%',
         height: '100%',
-        position: 'relative',
     },
-    polaroidLeft: {
+    captionPill: {
         position: 'absolute',
-        width: 160,
-        left: -24,
-        zIndex: 1,
-    },
-    polaroidCenter: {
-        position: 'absolute',
-        width: 192,
-        zIndex: 2,
-    },
-    polaroidRight: {
-        position: 'absolute',
-        width: 160,
-        right: -24,
-        zIndex: 1,
-    },
-    cameraCapsule: {
-        position: 'absolute',
-        bottom: 32,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        borderRadius: 24,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        left: 20,
+        bottom: 24,
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: 'rgba(11, 15, 12, 0.72)',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
-        zIndex: 3,
+        borderRadius: 999,
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        maxWidth: '76%',
     },
-    cameraIconContainer: {
-        backgroundColor: '#FFFC00',
-        padding: 10,
-        borderRadius: 16,
-        marginRight: 12,
+    avatarWrap: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        overflow: 'hidden',
+        backgroundColor: colors.card,
+        marginRight: 8,
     },
-    capsuleLines: {
-        marginRight: 16,
+    avatar: {
+        width: '100%',
+        height: '100%',
     },
-    capsuleLineLong: {
-        width: 96,
-        height: 8,
-        backgroundColor: 'rgba(255,255,255,0.4)',
-        borderRadius: 4,
-        marginBottom: 6,
-    },
-    capsuleLineShort: {
-        width: 64,
-        height: 8,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        borderRadius: 4,
+    captionText: {
+        color: '#F3F4F6',
+        fontSize: 12,
+        fontWeight: '600',
     },
     textContent: {
-        alignItems: 'center',
+        marginTop: 28,
+        paddingHorizontal: 8,
     },
     title: {
-        color: '#FFFC00',
-        fontSize: 40,
-        fontWeight: '900', // Black
-        textAlign: 'center',
-        lineHeight: 48,
+        color: colors.text,
+        fontSize: 42,
+        fontWeight: '900',
+        lineHeight: 46,
+        letterSpacing: -1.4,
     },
-    whiteText: {
-        color: '#fff',
+    accentText: {
+        color: colors.accent,
     },
     subtitle: {
-        color: '#A3A3A3',
-        fontSize: 18,
-        textAlign: 'center',
-        marginTop: 16,
-        paddingHorizontal: 32,
-        lineHeight: 24,
+        color: colors.textSecondary,
+        fontSize: 16,
+        marginTop: 18,
+        lineHeight: 22,
+        maxWidth: '92%',
     },
     footer: {
-        alignItems: 'center',
+        marginTop: 28,
         width: '100%',
+        paddingBottom: 12,
     },
-    pagination: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 40,
-    },
-    activeDot: {
-        width: 32,
-        height: 12,
-        backgroundColor: '#FFFC00',
-        borderRadius: 6,
-        marginRight: 8,
-    },
-    dot: {
-        width: 12,
-        height: 12,
-        backgroundColor: '#262626',
-        borderRadius: 6,
-        marginRight: 8,
-    },
-    fullWidth: {
+    primaryButton: {
         width: '100%',
+        height: 62,
+        borderRadius: 31,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.2,
+        shadowRadius: 24,
+        elevation: 8,
+    },
+    secondaryButton: {
+        width: '100%',
+        height: 62,
+        borderRadius: 31,
+        marginTop: 18,
+        borderColor: 'rgba(255,255,255,0.12)',
+        backgroundColor: 'rgba(10, 16, 12, 0.55)',
+    },
+    footerNote: {
+        marginTop: 34,
+        textAlign: 'center',
+        color: 'rgba(249, 250, 251, 0.58)',
+        fontSize: 11,
+        fontWeight: '500',
+        letterSpacing: 1.8,
     },
 });

@@ -1,0 +1,365 @@
+app: LivingChronology
+version: 1.0
+
+global:
+  storage:
+    token_key: auth_token
+    user_key: auth_user
+
+  validation_mode: on_submit
+
+flows:
+
+  # ========================
+  # LOGIN
+  # ========================
+  login:
+    screen: LoginScreen
+
+    fields:
+      - name: email_or_phone
+        type: text
+        required: true
+
+      - name: password
+        type: password
+        required: true
+
+    actions:
+      - name: submit_login
+        type: api_call
+        endpoint: /auth/login
+        method: POST
+        payload:
+          email_or_phone: "{{email_or_phone}}"
+          password: "{{password}}"
+
+      - name: go_to_signup
+        type: navigate
+        target: SignupScreen
+
+      - name: forgot_password
+        type: navigate
+        target: ForgotPasswordScreen
+
+    validation:
+      - field: email_or_phone
+        rule: required
+        message: "Email hoặc số điện thoại là bắt buộc"
+
+      - field: password
+        rule: required
+        message: "Mật khẩu là bắt buộc"
+
+    submit_flow:
+      - step: validate
+        on_fail:
+          type: show_error
+
+      - step: set_state
+        key: loading
+        value: true
+
+      - step: call_api
+        action: submit_login
+
+      - step: handle_response
+        on_success:
+          - type: store
+            data:
+              token: "{{response.token}}"
+              user: "{{response.user}}"
+
+          - type: navigate
+            target: HomeScreen
+
+        on_error:
+          - type: show_error
+            message: "{{response.message}}"
+
+      - step: set_state
+        key: loading
+        value: false
+
+
+  # ========================
+  # SIGNUP
+  # ========================
+  signup:
+    screen: SignupScreen
+
+    fields:
+      - name: user_name
+        type: text
+        required: true
+
+      - name: email_or_phone
+        type: text
+        required: true
+
+      - name: password
+        type: password
+        required: true
+        min_length: 6
+
+    actions:
+      - name: submit_signup
+        type: api_call
+        endpoint: /auth/signup
+        method: POST
+        payload:
+          user_name: "{{user_name}}"
+          email_or_phone: "{{email_or_phone}}"
+          password: "{{password}}"
+
+      - name: go_to_login
+        type: navigate
+        target: LoginScreen
+
+    validation:
+      - field: user_name
+        rule: required
+        message: "Tên người dùng không được để trống"
+
+      - field: email_or_phone
+        rule: required
+        message: "Email hoặc số điện thoại là bắt buộc"
+
+      - field: password
+        rule: required
+        message: "Mật khẩu là bắt buộc"
+
+      - field: password
+        rule: min_length
+        value: 6
+        message: "Mật khẩu phải có ít nhất 6 ký tự"
+
+    submit_flow:
+      - step: validate
+        on_fail:
+          type: show_error
+
+      - step: set_state
+        key: loading
+        value: true
+
+      - step: call_api
+        action: submit_signup
+
+      - step: handle_response
+        on_success:
+          - type: store
+            data:
+              token: "{{response.token}}"
+              user: "{{response.user}}"
+
+          - type: navigate
+            target: HomeScreen
+
+        on_error:
+          - type: show_error
+            message: "{{response.message}}"
+
+      - step: set_state
+        key: loading
+        value: false
+
+
+  # ========================
+  # FORGOT PASSWORD - SEND OTP
+  # ========================
+  forgot_password:
+    screen: ForgotPasswordScreen
+
+    fields:
+      - name: email_or_phone
+        type: text
+        required: true
+
+    actions:
+      - name: send_otp
+        type: api_call
+        endpoint: /auth/forgot-password/send-otp
+        method: POST
+        payload:
+          email_or_phone: "{{email_or_phone}}"
+
+      - name: go_to_login
+        type: navigate
+        target: LoginScreen
+
+    validation:
+      - field: email_or_phone
+        rule: required
+        message: "Email hoặc số điện thoại là bắt buộc"
+
+    submit_flow:
+      - step: validate
+        on_fail:
+          type: show_error
+
+      - step: set_state
+        key: loading
+        value: true
+
+      - step: call_api
+        action: send_otp
+
+      - step: handle_response
+        on_success:
+          - type: navigate
+            target: VerifyOTPScreen
+            params:
+              email_or_phone: "{{email_or_phone}}"
+
+        on_error:
+          - type: show_error
+            message: "{{response.message}}"
+
+      - step: set_state
+        key: loading
+        value: false
+
+
+  # ========================
+  # VERIFY OTP
+  # ========================
+  verify_otp:
+    screen: VerifyOTPScreen
+
+    fields:
+      - name: otp
+        type: text
+        required: true
+        length: 6
+
+    actions:
+      - name: verify_otp
+        type: api_call
+        endpoint: /auth/forgot-password/verify-otp
+        method: POST
+        payload:
+          email_or_phone: "{{params.email_or_phone}}"
+          otp: "{{otp}}"
+
+      - name: resend_otp
+        type: api_call
+        endpoint: /auth/forgot-password/resend-otp
+        method: POST
+        payload:
+          email_or_phone: "{{params.email_or_phone}}"
+
+    validation:
+      - field: otp
+        rule: required
+        message: "OTP là bắt buộc"
+
+      - field: otp
+        rule: length
+        value: 6
+        message: "OTP phải có 6 ký tự"
+
+    submit_flow:
+      - step: validate
+        on_fail:
+          type: show_error
+
+      - step: set_state
+        key: loading
+        value: true
+
+      - step: call_api
+        action: verify_otp
+
+      - step: handle_response
+        on_success:
+          - type: navigate
+            target: ResetPasswordScreen
+            params:
+              email_or_phone: "{{params.email_or_phone}}"
+              otp: "{{otp}}"
+
+        on_error:
+          - type: show_error
+            message: "{{response.message}}"
+
+      - step: set_state
+        key: loading
+        value: false
+
+    extra:
+      resend_cooldown: 60
+
+
+  # ========================
+  # RESET PASSWORD
+  # ========================
+  reset_password:
+    screen: ResetPasswordScreen
+
+    fields:
+      - name: new_password
+        type: password
+        required: true
+        min_length: 6
+
+      - name: confirm_password
+        type: password
+        required: true
+
+    actions:
+      - name: reset_password
+        type: api_call
+        endpoint: /auth/forgot-password/reset
+        method: POST
+        payload:
+          email_or_phone: "{{params.email_or_phone}}"
+          otp: "{{params.otp}}"
+          new_password: "{{new_password}}"
+
+    validation:
+      - field: new_password
+        rule: required
+        message: "Mật khẩu mới là bắt buộc"
+
+      - field: new_password
+        rule: min_length
+        value: 6
+        message: "Mật khẩu phải có ít nhất 6 ký tự"
+
+      - field: confirm_password
+        rule: required
+        message: "Xác nhận mật khẩu là bắt buộc"
+
+      - field: confirm_password
+        rule: match
+        target: new_password
+        message: "Mật khẩu xác nhận không khớp"
+
+    submit_flow:
+      - step: validate
+        on_fail:
+          type: show_error
+
+      - step: set_state
+        key: loading
+        value: true
+
+      - step: call_api
+        action: reset_password
+
+      - step: handle_response
+        on_success:
+          - type: show_success
+            message: "Đặt lại mật khẩu thành công"
+
+          - type: navigate
+            target: LoginScreen
+
+        on_error:
+          - type: show_error
+            message: "{{response.message}}"
+
+      - step: set_state
+        key: loading
+        value: false

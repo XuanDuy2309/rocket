@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, Text, View, ActivityIndicator, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { colors } from '../theme/colors';
 
 interface ButtonProps {
     label: string;
@@ -41,7 +42,7 @@ export const Button = ({
             ]}
         >
             {loading ? (
-                <ActivityIndicator color={variant === 'primary' ? 'black' : 'white'} />
+                <ActivityIndicator color={variant === 'primary' ? colors.background : colors.text} />
             ) : (
                 <>
                     <Text style={[styles.text, variant === 'primary' && styles.primaryText, variant === 'secondary' && styles.secondaryText, variant === 'outline' && styles.outlineText, variant === 'ghost' && styles.ghostText, textStyle]}>
@@ -64,45 +65,45 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
     },
     primary: {
-        backgroundColor: '#FFFC00',
+        backgroundColor: colors.primary,
     },
     primaryPressed: {
-        backgroundColor: '#E6E300',
+        backgroundColor: colors.primaryDark,
     },
     secondary: {
-        backgroundColor: '#262626',
+        backgroundColor: colors.surface,
     },
     secondaryPressed: {
-        backgroundColor: '#404040',
+        backgroundColor: colors.border,
     },
     outline: {
         borderWidth: 1,
-        borderColor: '#404040',
+        borderColor: colors.border,
     },
     outlinePressed: {
-        backgroundColor: '#171717',
+        backgroundColor: colors.surface,
     },
     ghost: {
         backgroundColor: 'transparent',
     },
     ghostPressed: {
-        backgroundColor: '#171717',
+        backgroundColor: colors.surface,
     },
     text: {
         fontSize: 18,
         fontWeight: 'bold',
     },
     primaryText: {
-        color: '#000',
+        color: colors.background,
     },
     secondaryText: {
-        color: '#fff',
+        color: colors.text,
     },
     outlineText: {
-        color: '#fff',
+        color: colors.text,
     },
     ghostText: {
-        color: '#fff',
+        color: colors.text,
     },
     disabled: {
         opacity: 0.5,
@@ -111,4 +112,3 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
 });
-
