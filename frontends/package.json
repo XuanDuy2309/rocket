@@ -9,8 +9,10 @@
     "sdk:ui": "pnpm --filter @rocket/sdk-ui"
   },
   "dependencies": {
+    "@babel/runtime": "^7.20.0",
     "react-native-css-interop": "0.1.22",
-    "@babel/runtime": "^7.20.0"
+    "react-native-reanimated": "~3.17.5",
+    "react-native-svg": "^15.15.3"
   },
   "pnpm": {
     "overrides": {
