@@ -8,9 +8,9 @@ import {
     StyleSheet,
     Text,
     TextInput,
-    View,
 } from 'react-native';
 import { Button } from '../components';
+import { Row, Stack } from '../components/common';
 
 interface AuthScreenProps {
     mode: AuthMode;
@@ -79,30 +79,30 @@ export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScre
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
-                <View style={styles.topGlow} />
+                <Stack style={styles.topGlow} />
 
-                <View style={styles.topBar}>
+                <Row style={styles.topBar}>
                     {isRegister ? (
-                        <View style={styles.heroBadge}>
+                        <Stack style={styles.heroBadge}>
                             <Text style={styles.heroBadgeText}>✦</Text>
-                        </View>
+                        </Stack>
                     ) : (
-                        <View style={styles.localeWrap}>
-                            <View style={styles.localeIcon}>
+                        <Row style={styles.localeWrap}>
+                            <Stack style={styles.localeIcon}>
                                 <Text style={styles.localeIconText}>◎</Text>
-                            </View>
+                            </Stack>
                             <Text style={styles.localeText}>VN | EN</Text>
-                        </View>
+                        </Row>
                     )}
-                    <View style={styles.ghostIcon} />
-                </View>
+                    <Stack style={styles.ghostIcon} />
+                </Row>
 
-                <View style={styles.headingBlock}>
+                <Stack style={styles.headingBlock}>
                     {content.title}
                     <Text style={styles.subtitle}>{content.subtitle}</Text>
-                </View>
+                </Stack>
 
-                <View style={styles.form}>
+                <Stack style={styles.form}>
                     {isRegister ? (
                         <>
                             <Text style={styles.formLabel}>Tên người dùng</Text>
@@ -118,7 +118,7 @@ export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScre
                         </>
                     ) : null}
 
-                    <View style={styles.formGroup}>
+                    <Stack style={styles.formGroup}>
                         <Text style={styles.formLabel}>Số điện thoại hoặc Email</Text>
                         <TextInput
                             value={values.email}
@@ -129,14 +129,14 @@ export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScre
                             autoCapitalize="none"
                             keyboardType="email-address"
                         />
-                    </View>
+                    </Stack>
 
-                    <View style={styles.formGroup}>
-                        <View style={styles.passwordHeader}>
+                    <Stack style={styles.formGroup}>
+                        <Row style={styles.passwordHeader}>
                             <Text style={[styles.formLabel, styles.passwordLabel]}>Mật khẩu</Text>
                             {!isRegister ? <Text style={styles.linkText}>QUÊN MẬT KHẨU?</Text> : null}
-                        </View>
-                        <View
+                        </Row>
+                        <Row
                             style={[
                                 styles.input,
                                 styles.passwordInput,
@@ -154,8 +154,8 @@ export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScre
                             <Pressable onPress={() => setSecureTextEntry((current) => !current)} hitSlop={8}>
                                 <Text style={styles.eyeText}>{secureTextEntry ? '◉' : '◌'}</Text>
                             </Pressable>
-                        </View>
-                    </View>
+                        </Row>
+                    </Stack>
 
                     {values.error ? (
                         <Text style={styles.errorText}>◉ {values.error}</Text>
@@ -173,22 +173,22 @@ export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScre
                         loading={mutation.isPending}
                     />
 
-                    <View style={styles.switchRow}>
+                    <Row style={styles.switchRow}>
                         <Text style={styles.switchText}>{content.switchText} </Text>
                         <Pressable onPress={() => onNavigateToMode?.(content.switchMode)}>
                             <Text style={[styles.switchAction, !isRegister && styles.switchActionAlt]}>
                                 {content.switchAction}
                             </Text>
                         </Pressable>
-                    </View>
+                    </Row>
 
                     {content.helper ? <Text style={styles.footerCopy}>{content.helper}</Text> : null}
-                </View>
+                </Stack>
 
                 {mutation.isPending ? (
-                    <View style={styles.loadingDock}>
+                    <Stack style={styles.loadingDock}>
                         <ActivityIndicator color={palette.accent} />
-                    </View>
+                    </Stack>
                 ) : null}
             </ScrollView>
         </SafeAreaView>
@@ -220,12 +220,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(75, 228, 138, 0.12)',
     },
     topBar: {
-        flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
     localeWrap: {
-        flexDirection: 'row',
         alignItems: 'center',
     },
     localeIcon: {
@@ -299,7 +297,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     passwordHeader: {
-        flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
@@ -327,7 +324,6 @@ const styles = StyleSheet.create({
         letterSpacing: 1.8,
     },
     passwordInput: {
-        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
@@ -369,7 +365,6 @@ const styles = StyleSheet.create({
         elevation: 10,
     },
     switchRow: {
-        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 92,

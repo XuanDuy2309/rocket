@@ -5,4 +5,3 @@ export * from './devices'
 export * from './permissions';
 export * from './toast';
 export * from './fontStyles';
-export * from './points';

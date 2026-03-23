@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, SafeAreaView, StyleSheet, Text as RNText, Image, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, Text as RNText, Image, ScrollView, Text } from 'react-native';
 import { Button } from '../components';
+import { Row, Stack } from '../components/common';
 import { colors } from '../theme/colors';
 
 interface OnboardingScreenProps {
@@ -17,26 +18,26 @@ export const OnboardingScreen = ({ onSignUp, onLogin }: OnboardingScreenProps) =
                 showsVerticalScrollIndicator={false}
                 bounces={false}
             >
-                <View style={styles.container}>
-                    <View style={styles.topGlow} />
-                    <View style={styles.bottomGlow} />
+                <Stack style={styles.container}>
+                    <Stack style={styles.topGlow} />
+                    <Stack style={styles.bottomGlow} />
 
-                    <View style={styles.header}>
-                        <RNText style={styles.brand}>The Living Chronology</RNText>
+                    <Row style={styles.header}>
+                        <Text style={styles.brand}>The Living Chronology</Text>
 
-                        <View style={styles.liveNow}>
-                            <View style={styles.liveIcon}>
-                                <View style={styles.liveIconCore} />
-                            </View>
-                            <RNText style={styles.liveNowText}>LIVE NOW</RNText>
-                        </View>
-                    </View>
+                        <Row style={styles.liveNow}>
+                            <Stack style={styles.liveIcon}>
+                                <Stack style={styles.liveIconCore} />
+                            </Stack>
+                            <Text style={styles.liveNowText}>LIVE NOW</Text>
+                        </Row>
+                    </Row>
 
-                    <View style={styles.heroSection}>
-                        <View style={styles.heroFrame}>
-                            <View style={styles.heroBackdropCard} />
+                    <Stack style={styles.heroSection}>
+                        <Stack style={styles.heroFrame}>
+                            <Stack style={styles.heroBackdropCard} />
 
-                            <View style={styles.heroCard}>
+                            <Stack style={styles.heroCard}>
                                 <Image
                                     source={{ uri: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=300&auto=format&fit=crop' }}
                                     style={styles.peekImage}
@@ -49,21 +50,21 @@ export const OnboardingScreen = ({ onSignUp, onLogin }: OnboardingScreenProps) =
                                     resizeMode="cover"
                                 />
 
-                                <View style={styles.captionPill}>
-                                    <View style={styles.avatarWrap}>
+                                <Row style={styles.captionPill}>
+                                    <Stack style={styles.avatarWrap}>
                                         <Image
                                             source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
                                             style={styles.avatar}
                                             resizeMode="cover"
                                         />
-                                    </View>
+                                    </Stack>
                                     <RNText style={styles.captionText}>@linh_anh chia sẻ 2 phút trước</RNText>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                                </Row>
+                            </Stack>
+                        </Stack>
+                    </Stack>
 
-                    <View style={styles.textContent}>
+                    <Stack style={styles.textContent}>
                         <RNText style={styles.title}>
                             Ghi lại mọi khoảnh khắc,{"\n"}
                             <RNText style={styles.accentText}>kết nối mọi trái tim</RNText>
@@ -71,9 +72,9 @@ export const OnboardingScreen = ({ onSignUp, onLogin }: OnboardingScreenProps) =
                         <RNText style={styles.subtitle}>
                             Trải nghiệm dòng thời gian sống động, nơi mỗi kỷ niệm được trân trọng và lan tỏa.
                         </RNText>
-                    </View>
+                    </Stack>
 
-                    <View style={styles.footer}>
+                    <Stack style={styles.footer}>
                         <Button
                             label="Đăng ký"
                             variant="primary"
@@ -87,8 +88,8 @@ export const OnboardingScreen = ({ onSignUp, onLogin }: OnboardingScreenProps) =
                             onPress={onLogin}
                         />
                         <RNText style={styles.footerNote}>THAM GIA CÙNG HƠN 2 TRIỆU NGƯỜI DÙNG</RNText>
-                    </View>
-                </View>
+                    </Stack>
+                </Stack>
             </ScrollView>
         </SafeAreaView>
     );
@@ -133,7 +134,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(59, 130, 246, 0.16)',
     },
     header: {
-        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 12,
@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
         letterSpacing: -0.8,
     },
     liveNow: {
-        flexDirection: 'row',
         alignItems: 'center',
     },
     liveIcon: {
@@ -219,7 +218,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 20,
         bottom: 24,
-        flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'rgba(11, 15, 12, 0.72)',
         borderWidth: 1,

@@ -1,5 +1,5 @@
 {
-  "extends": "../../frontends/rocket-fe/tsconfig.json",
+  "extends": "../rocket-fe/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
