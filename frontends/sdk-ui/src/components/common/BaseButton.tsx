@@ -1,6 +1,8 @@
+
 import React from 'react';
-import {ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle} from 'react-native';
-import {colors} from '@/theme/colors';
+import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { colors } from '@/theme';
+
 
 type BaseButtonVariant = 'PRIMARY' | 'BASE';
 

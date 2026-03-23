@@ -1,6 +1,6 @@
+import { colors } from '@/theme';
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { colors } from '@/theme/colors';
 
 interface ErrorTextProps {
     message?: string;

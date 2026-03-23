@@ -1,12 +1,13 @@
+import { colors } from "@/theme";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { colors } from "../../theme/colors";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 interface BottomSheetProps {
   open: boolean;
