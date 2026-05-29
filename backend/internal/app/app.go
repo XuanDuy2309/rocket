@@ -10,9 +10,13 @@ import (
 
 	"rocket-backend/internal/config"
 	"rocket-backend/internal/database"
+	"rocket-backend/internal/modules/auth"
 	"rocket-backend/internal/pkg/s3"
 	"rocket-backend/internal/server"
 )
+
+// defaultTokenTTL is used when AUTH_TOKEN_TTL is unset. Spec §5: 7 days.
+const defaultTokenTTL = 7 * 24 * time.Hour
 
 type App struct {
 	cfg    config.Config
@@ -47,12 +51,17 @@ func New(cfg config.Config) (*App, error) {
 		return nil, err
 	}
 
+	authRepo := auth.NewRepository(pgPool)
+	authService := auth.NewService(authRepo, rd, cfg.JWTSecret, defaultTokenTTL)
+	authHandler := auth.NewHandler(authService)
+
 	router := server.NewHTTPServer(server.Handlers{
 		Health: server.HealthHandler(server.HealthDependencies{Postgres: pgPool, Redis: rd}),
 		Ping:   server.PingHandler,
 		WS:     server.WebSocketHandler,
 		Me:     server.DefaultMeHandler,
-	}, cfg.JWTSecret)
+		Auth:   authHandler,
+	}, cfg.JWTSecret, authService)
 
 	srv := &http.Server{
 		Addr:    cfg.HTTPAddr,

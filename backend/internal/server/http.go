@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"rocket-backend/internal/middleware"
+	"rocket-backend/internal/modules/auth"
 )
 
 type Handlers struct {
@@ -13,9 +14,10 @@ type Handlers struct {
 	Ping   func(*gin.Context)
 	WS     func(*gin.Context)
 	Me     func(*gin.Context)
+	Auth   *auth.Handler
 }
 
-func NewHTTPServer(handlers Handlers, jwtSecret string) *gin.Engine {
+func NewHTTPServer(handlers Handlers, jwtSecret string, revoker middleware.RevocationChecker) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 	r.Use(middleware.CORS())
@@ -27,9 +29,13 @@ func NewHTTPServer(handlers Handlers, jwtSecret string) *gin.Engine {
 	api := r.Group("/api/v1")
 	api.GET("/ping", handlers.Ping)
 
-	auth := api.Group("")
-	auth.Use(middleware.Auth(jwtSecret))
-	auth.GET("/me", handlers.Me)
+	protected := api.Group("")
+	protected.Use(middleware.Auth(jwtSecret, revoker))
+	protected.GET("/me", handlers.Me)
+
+	if handlers.Auth != nil {
+		handlers.Auth.RegisterRoutes(api, protected)
+	}
 
 	return r
 }
