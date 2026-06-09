@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,8 @@ import (
 	"rocket-backend/internal/config"
 	"rocket-backend/internal/database"
 	"rocket-backend/internal/modules/auth"
+	"rocket-backend/internal/modules/friend"
+	"rocket-backend/internal/modules/home"
 	"rocket-backend/internal/pkg/s3"
 	"rocket-backend/internal/server"
 )
@@ -55,12 +58,24 @@ func New(cfg config.Config) (*App, error) {
 	authService := auth.NewService(authRepo, rd, cfg.JWTSecret, defaultTokenTTL)
 	authHandler := auth.NewHandler(authService)
 
+	media := mediaBaseURL(cfg)
+
+	homeRepo := home.NewRepository(pgPool)
+	homeService := home.NewService(homeRepo, media)
+	homeHandler := home.NewHandler(homeService)
+
+	friendRepo := friend.NewRepository(pgPool)
+	friendService := friend.NewService(friendRepo, media)
+	friendHandler := friend.NewHandler(friendService)
+
 	router := server.NewHTTPServer(server.Handlers{
 		Health: server.HealthHandler(server.HealthDependencies{Postgres: pgPool, Redis: rd}),
 		Ping:   server.PingHandler,
 		WS:     server.WebSocketHandler,
 		Me:     server.DefaultMeHandler,
 		Auth:   authHandler,
+		Home:   homeHandler,
+		Friend: friendHandler,
 	}, cfg.JWTSecret, authService)
 
 	srv := &http.Server{
@@ -69,6 +84,16 @@ func New(cfg config.Config) (*App, error) {
 	}
 
 	return &App{cfg: cfg, server: srv}, nil
+}
+
+// mediaBaseURL derives the public base for object storage (path-style:
+// <endpoint>/<bucket>) used to turn stored s3 keys into URLs. Empty when S3
+// is not configured, in which case keys are returned as-is.
+func mediaBaseURL(cfg config.Config) string {
+	if cfg.S3Endpoint == "" || cfg.S3Bucket == "" {
+		return ""
+	}
+	return strings.TrimRight(cfg.S3Endpoint, "/") + "/" + cfg.S3Bucket
 }
 
 func (a *App) Run() error {

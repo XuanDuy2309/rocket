@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"rocket-backend/internal/pkg/jwt"
+	"rocket-backend/internal/pkg/response"
 )
 
 // RevocationChecker reports whether a JTI has been added to the deny-list.
@@ -26,19 +27,19 @@ func Auth(secret string, revoker RevocationChecker) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth := c.GetHeader("Authorization")
 		if auth == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing authorization"})
+			response.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "Thiếu thông tin xác thực")
 			return
 		}
 
 		parts := strings.SplitN(auth, " ", 2)
 		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization"})
+			response.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "Thông tin xác thực không hợp lệ")
 			return
 		}
 
 		claims, err := jwt.Parse(parts[1], secret)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			response.Error(c, http.StatusUnauthorized, "INVALID_TOKEN", "Token không hợp lệ")
 			return
 		}
 
@@ -48,7 +49,7 @@ func Auth(secret string, revoker RevocationChecker) gin.HandlerFunc {
 			case err != nil:
 				log.Printf("auth: revocation check failed, fail-open: %v", err)
 			case revoked:
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token revoked"})
+				response.Error(c, http.StatusUnauthorized, "TOKEN_REVOKED", "Token đã bị thu hồi")
 				return
 			}
 		}

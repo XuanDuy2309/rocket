@@ -7,6 +7,8 @@ import (
 
 	"rocket-backend/internal/middleware"
 	"rocket-backend/internal/modules/auth"
+	"rocket-backend/internal/modules/friend"
+	"rocket-backend/internal/modules/home"
 )
 
 type Handlers struct {
@@ -15,6 +17,8 @@ type Handlers struct {
 	WS     func(*gin.Context)
 	Me     func(*gin.Context)
 	Auth   *auth.Handler
+	Home   *home.Handler
+	Friend *friend.Handler
 }
 
 func NewHTTPServer(handlers Handlers, jwtSecret string, revoker middleware.RevocationChecker) *gin.Engine {
@@ -33,8 +37,19 @@ func NewHTTPServer(handlers Handlers, jwtSecret string, revoker middleware.Revoc
 	protected.Use(middleware.Auth(jwtSecret, revoker))
 	protected.GET("/me", handlers.Me)
 
+	if handlers.Home != nil {
+		handlers.Home.RegisterRoutes(protected)
+	}
+
+	if handlers.Friend != nil {
+		handlers.Friend.RegisterRoutes(protected)
+	}
+
 	if handlers.Auth != nil {
-		handlers.Auth.RegisterRoutes(api, protected)
+		// /login gets a stricter per-IP limit (10/min) than the global
+		// limiter — Plans.md task 2.1. This is a separate middleware
+		// instance with its own counter store.
+		handlers.Auth.RegisterRoutes(api, protected, middleware.RateLimit(10))
 	}
 
 	return r

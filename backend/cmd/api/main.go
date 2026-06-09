@@ -8,6 +8,10 @@ import (
 	"syscall"
 	"time"
 
+	// Embed the IANA tz database so time.LoadLocation works regardless of
+	// the container base image (the home module resolves user timezones).
+	_ "time/tzdata"
+
 	"rocket-backend/internal/app"
 	"rocket-backend/internal/config"
 )

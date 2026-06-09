@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"rocket-backend/internal/pkg/response"
 )
 
 type rateLimitEntry struct {
@@ -32,7 +34,7 @@ func RateLimit(maxPerMinute int) gin.HandlerFunc {
 
 		if entry.count >= maxPerMinute {
 			mu.Unlock()
-			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "rate limit exceeded"})
+			response.Error(c, http.StatusTooManyRequests, "RATE_LIMITED", "Quá nhiều yêu cầu, vui lòng thử lại sau")
 			return
 		}
 
