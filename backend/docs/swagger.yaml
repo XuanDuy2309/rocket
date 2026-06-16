@@ -1,0 +1,573 @@
+definitions:
+  auth.AuthResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/auth.PublicUser'
+    type: object
+  auth.LoginRequest:
+    properties:
+      email_or_phone:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email_or_phone
+    - password
+    type: object
+  auth.PublicUser:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      user_name:
+        type: string
+    type: object
+  auth.SignupRequest:
+    properties:
+      email_or_phone:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      user_name:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - email_or_phone
+    - password
+    - user_name
+    type: object
+  friend.InviteRequest:
+    properties:
+      email_or_phone:
+        type: string
+    required:
+    - email_or_phone
+    type: object
+  friend.PublicUser:
+    properties:
+      avatar_url:
+        type: string
+      id:
+        type: string
+      user_name:
+        type: string
+    type: object
+  friend.PulseItem:
+    properties:
+      last_active_at:
+        type: string
+      presence:
+        type: string
+      status_text:
+        type: string
+      user:
+        $ref: '#/definitions/friend.PublicUser'
+    type: object
+  friend.PulseResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/friend.PulseItem'
+        type: array
+      online_count:
+        type: integer
+    type: object
+  friend.RespondRequest:
+    properties:
+      action:
+        description: '"accept" | "decline"'
+        type: string
+    required:
+    - action
+    type: object
+  friend.SearchList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/friend.SearchResult'
+        type: array
+      next_cursor:
+        type: string
+    type: object
+  friend.SearchResult:
+    properties:
+      avatar_url:
+        type: string
+      friendship_status:
+        type: string
+      handle:
+        type: string
+      id:
+        type: string
+      user_name:
+        type: string
+    type: object
+  friend.StatusResponse:
+    properties:
+      friendship_status:
+        type: string
+    type: object
+  friend.Suggestion:
+    properties:
+      avatar_url:
+        type: string
+      id:
+        type: string
+      reason:
+        $ref: '#/definitions/friend.SuggestionReason'
+      user_name:
+        type: string
+    type: object
+  friend.SuggestionList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/friend.Suggestion'
+        type: array
+    type: object
+  friend.SuggestionReason:
+    properties:
+      count:
+        description: mutual friend count when Type == "mutual"
+        type: integer
+      type:
+        description: '"mutual" | "suggested"'
+        type: string
+    type: object
+  home.CalendarDay:
+    properties:
+      cover_photo_url:
+        type: string
+      date:
+        description: '"2006-01-02"'
+        type: string
+      memory_count:
+        type: integer
+    type: object
+  home.Flashback:
+    properties:
+      memory_id:
+        type: string
+      photo_url:
+        type: string
+      taken_at:
+        type: string
+      title:
+        type: string
+      years_ago:
+        type: integer
+    type: object
+  home.HomeResponse:
+    properties:
+      calendar:
+        items:
+          $ref: '#/definitions/home.CalendarDay'
+        type: array
+      flashback:
+        $ref: '#/definitions/home.Flashback'
+      month:
+        description: '"2006-01"'
+        type: string
+      stats:
+        $ref: '#/definitions/home.Stats'
+      user:
+        $ref: '#/definitions/home.UserHeader'
+    type: object
+  home.Stats:
+    properties:
+      month_memories:
+        type: integer
+      total_keepsakes:
+        type: integer
+    type: object
+  home.UserHeader:
+    properties:
+      avatar_url:
+        type: string
+      id:
+        type: string
+      user_name:
+        type: string
+    type: object
+  response.ErrorBody:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Rocket backend API — social memory journal
+  title: Rocket API
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate with email/phone and password
+      parameters:
+      - description: Login credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Login
+      tags:
+      - auth
+  /api/v1/auth/logout:
+    post:
+      description: Invalidate the current JWT token
+      responses:
+        "204":
+          description: no content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Logout
+      tags:
+      - auth
+  /api/v1/auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new account
+      parameters:
+      - description: Signup info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/auth.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Signup
+      tags:
+      - auth
+  /api/v1/friends/{id}:
+    delete:
+      description: Remove a friend or cancel a pending request
+      parameters:
+      - description: Target user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: no content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Remove friend
+      tags:
+      - friends
+  /api/v1/friends/{id}/request:
+    post:
+      description: Send a friend request to another user
+      parameters:
+      - description: Target user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/friend.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Send friend request
+      tags:
+      - friends
+  /api/v1/friends/{id}/respond:
+    post:
+      consumes:
+      - application/json
+      description: Accept or decline a pending friend request
+      parameters:
+      - description: Requester user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Action (accept|decline)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/friend.RespondRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/friend.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Respond to friend request
+      tags:
+      - friends
+  /api/v1/friends/invite:
+    post:
+      consumes:
+      - application/json
+      description: Send an app invitation via email or phone
+      parameters:
+      - description: Email or phone
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/friend.InviteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Invite friend
+      tags:
+      - friends
+  /api/v1/friends/pulse:
+    get:
+      description: Get friends' online status (active now / recent / offline)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/friend.PulseResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Friend pulse
+      tags:
+      - friends
+  /api/v1/friends/search:
+    get:
+      description: Search for users by name or handle
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Max results (1-100, default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/friend.SearchList'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Search friends
+      tags:
+      - friends
+  /api/v1/friends/suggestions:
+    get:
+      description: Get suggested users to add as friends
+      parameters:
+      - description: Max results (1-100, default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/friend.SuggestionList'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Friend suggestions
+      tags:
+      - friends
+  /api/v1/home:
+    get:
+      description: Get the Memory Journal home screen aggregate for a given month
+      parameters:
+      - description: Month (YYYY-MM), defaults to current
+        in: query
+        name: month
+        type: string
+      - description: Timezone (e.g. Asia/Ho_Chi_Minh)
+        in: query
+        name: tz
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/home.HomeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Home feed
+      tags:
+      - home
+  /api/v1/me:
+    get:
+      description: Returns the user_id extracted from the JWT token
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Current user
+      tags:
+      - system
+  /api/v1/ping:
+    get:
+      description: Simple connectivity check
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Ping
+      tags:
+      - system
+  /health:
+    get:
+      description: Returns the status of Postgres and Redis connections
+      responses:
+        "200":
+          description: both healthy
+          schema:
+            additionalProperties: true
+            type: object
+        "503":
+          description: one or more unhealthy
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check
+      tags:
+      - system
+  /ws:
+    get:
+      description: Upgrades to a WebSocket connection and echoes messages back
+      responses:
+        "101":
+          description: switching protocols
+      summary: WebSocket echo
+      tags:
+      - system
+swagger: "2.0"

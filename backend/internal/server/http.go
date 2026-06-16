@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	swag "github.com/swaggo/swag"
 
 	"rocket-backend/internal/middleware"
 	"rocket-backend/internal/modules/auth"
@@ -19,6 +20,7 @@ type Handlers struct {
 	Auth   *auth.Handler
 	Home   *home.Handler
 	Friend *friend.Handler
+	IsDev  bool
 }
 
 func NewHTTPServer(handlers Handlers, jwtSecret string, revoker middleware.RevocationChecker) *gin.Engine {
@@ -29,6 +31,21 @@ func NewHTTPServer(handlers Handlers, jwtSecret string, revoker middleware.Revoc
 
 	r.GET("/health", handlers.Health)
 	r.GET("/ws", handlers.WS)
+
+	if handlers.IsDev {
+		r.GET("/docs/openapi.json", func(c *gin.Context) {
+			doc, err := swag.ReadDoc("swagger")
+			if err != nil {
+				c.String(http.StatusNotFound, "not found")
+				return
+			}
+			c.Data(http.StatusOK, "application/json", []byte(doc))
+		})
+		r.GET("/docs", func(c *gin.Context) {
+			c.Header("Content-Type", "text/html; charset=utf-8")
+			c.String(200, scalarPage)
+		})
+	}
 
 	api := r.Group("/api/v1")
 	api.GET("/ping", handlers.Ping)
@@ -55,6 +72,29 @@ func NewHTTPServer(handlers Handlers, jwtSecret string, revoker middleware.Revoc
 	return r
 }
 
+// DefaultMeHandler returns the authenticated user's ID from JWT.
+// @Summary      Current user
+// @Description  Returns the user_id extracted from the JWT token
+// @Tags         system
+// @Security     BearerAuth
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/v1/me [get]
 func DefaultMeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user_id": c.GetString("user_id")})
 }
+
+const scalarPage = `<!doctype html>
+<html>
+<head>
+  <title>Rocket API Docs</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin: 0; }
+  </style>
+</head>
+<body>
+  <script id="api-reference" data-url="/docs/openapi.json" data-configuration='{"showSidebar":true}'></script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
+</html>`

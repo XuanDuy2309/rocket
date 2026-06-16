@@ -53,6 +53,16 @@ func (h *Handler) RegisterRoutes(public *gin.RouterGroup, protected *gin.RouterG
 	protected.POST("/auth/logout", h.logout)
 }
 
+// @Summary      Login
+// @Description  Authenticate with email/phone and password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body body auth.LoginRequest true "Login credentials"
+// @Success      200 {object} auth.AuthResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/auth/login [post]
 func (h *Handler) login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -71,6 +81,16 @@ func (h *Handler) login(c *gin.Context) {
 	c.JSON(http.StatusOK, AuthResponse{Token: tok, User: ToPublic(user)})
 }
 
+// @Summary      Signup
+// @Description  Create a new account
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body body auth.SignupRequest true "Signup info"
+// @Success      201 {object} auth.AuthResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      409 {object} response.ErrorBody
+// @Router       /api/v1/auth/signup [post]
 func (h *Handler) signup(c *gin.Context) {
 	var req SignupRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -92,6 +112,13 @@ func (h *Handler) signup(c *gin.Context) {
 	c.JSON(http.StatusCreated, AuthResponse{Token: tok, User: ToPublic(user)})
 }
 
+// @Summary      Logout
+// @Description  Invalidate the current JWT token
+// @Tags         auth
+// @Security     BearerAuth
+// @Success      204 "no content"
+// @Failure      500 {object} response.ErrorBody
+// @Router       /api/v1/auth/logout [post]
 func (h *Handler) logout(c *gin.Context) {
 	jti := c.GetString("jti")
 	expUnix := c.GetInt64("exp")

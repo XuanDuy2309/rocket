@@ -32,6 +32,17 @@ func (h *Handler) RegisterRoutes(r *gin.RouterGroup) {
 
 // home serves GET /home?month=2006-01&tz=Asia/Ho_Chi_Minh — the aggregate
 // for the Memory Journal screen (spec §2.1).
+// @Summary      Home feed
+// @Description  Get the Memory Journal home screen aggregate for a given month
+// @Tags         home
+// @Security     BearerAuth
+// @Produce      json
+// @Param        month query string false "Month (YYYY-MM), defaults to current"
+// @Param        tz    query string false "Timezone (e.g. Asia/Ho_Chi_Minh)"
+// @Success      200 {object} home.HomeResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/home [get]
 func (h *Handler) home(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {

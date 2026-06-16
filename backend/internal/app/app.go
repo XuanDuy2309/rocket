@@ -76,6 +76,7 @@ func New(cfg config.Config) (*App, error) {
 		Auth:   authHandler,
 		Home:   homeHandler,
 		Friend: friendHandler,
+		IsDev:  cfg.AppEnv == "development",
 	}, cfg.JWTSecret, authService)
 
 	srv := &http.Server{

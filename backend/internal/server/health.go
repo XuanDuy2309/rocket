@@ -14,6 +14,13 @@ type HealthDependencies struct {
 	Redis    *redis.Client
 }
 
+// HealthHandler checks the liveness of Postgres and Redis.
+// @Summary      Health check
+// @Description  Returns the status of Postgres and Redis connections
+// @Tags         system
+// @Success      200 {object} map[string]interface{} "both healthy"
+// @Success      503 {object} map[string]interface{} "one or more unhealthy"
+// @Router       /health [get]
 func HealthHandler(deps HealthDependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := context.Background()

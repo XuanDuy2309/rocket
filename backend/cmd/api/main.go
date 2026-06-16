@@ -1,7 +1,12 @@
+// @title           Rocket API
+// @version         1.0
+// @description     Rocket backend API — social memory journal
+// @host            localhost:8080
 package main
 
 import (
 	"context"
+	_ "rocket-backend/docs"
 	"log"
 	"os"
 	"os/signal"
