@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -37,6 +38,9 @@ func New(cfg config.Config) (*App, error) {
 	pgPool, err := database.NewPool(ctx, cfg.PostgresURL)
 	if err != nil {
 		return nil, err
+	}
+	if err := database.Migrate(ctx, pgPool); err != nil {
+		return nil, fmt.Errorf("migrate: %w", err)
 	}
 
 	rd := database.NewRedisClient(cfg.RedisAddr)
