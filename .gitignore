@@ -44,6 +44,7 @@ rocket-fe/expo-debug.log
 mysql_data
 docker-data/
 .docker/
+infra/jenkins/data/
 
 # Ignore docker build cache
 **/.docker-cache
