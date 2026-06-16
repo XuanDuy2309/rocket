@@ -15,6 +15,12 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+// WebSocketHandler upgrades to a WebSocket connection.
+// @Summary      WebSocket echo
+// @Description  Upgrades to a WebSocket connection and echoes messages back
+// @Tags         system
+// @Success      101 "switching protocols"
+// @Router       /ws [get]
 func WebSocketHandler(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {

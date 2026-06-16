@@ -48,6 +48,16 @@ func (h *Handler) RegisterRoutes(r *gin.RouterGroup) {
 	g.DELETE("/:id", h.remove)
 }
 
+// @Summary      Search friends
+// @Description  Search for users by name or handle
+// @Tags         friends
+// @Security     BearerAuth
+// @Produce      json
+// @Param        q     query string true  "Search query"
+// @Param        limit query int    false "Max results (1-100, default 20)"
+// @Success      200 {object} friend.SearchList
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/friends/search [get]
 func (h *Handler) search(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
@@ -61,6 +71,15 @@ func (h *Handler) search(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary      Friend suggestions
+// @Description  Get suggested users to add as friends
+// @Tags         friends
+// @Security     BearerAuth
+// @Produce      json
+// @Param        limit query int false "Max results (1-100, default 20)"
+// @Success      200 {object} friend.SuggestionList
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/friends/suggestions [get]
 func (h *Handler) suggestions(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
@@ -74,6 +93,14 @@ func (h *Handler) suggestions(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary      Friend pulse
+// @Description  Get friends' online status (active now / recent / offline)
+// @Tags         friends
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200 {object} friend.PulseResponse
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/friends/pulse [get]
 func (h *Handler) pulse(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
@@ -87,6 +114,17 @@ func (h *Handler) pulse(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary      Send friend request
+// @Description  Send a friend request to another user
+// @Tags         friends
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path string true "Target user ID"
+// @Success      200 {object} friend.StatusResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Failure      409 {object} response.ErrorBody
+// @Router       /api/v1/friends/{id}/request [post]
 func (h *Handler) request(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
@@ -107,6 +145,19 @@ func (h *Handler) request(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary      Respond to friend request
+// @Description  Accept or decline a pending friend request
+// @Tags         friends
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id   path string       true "Requester user ID"
+// @Param        body body friend.RespondRequest true "Action (accept|decline)"
+// @Success      200 {object} friend.StatusResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Failure      404 {object} response.ErrorBody
+// @Router       /api/v1/friends/{id}/respond [post]
 func (h *Handler) respond(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
@@ -132,6 +183,14 @@ func (h *Handler) respond(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary      Remove friend
+// @Description  Remove a friend or cancel a pending request
+// @Tags         friends
+// @Security     BearerAuth
+// @Param        id path string true "Target user ID"
+// @Success      204 "no content"
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/friends/{id} [delete]
 func (h *Handler) remove(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
@@ -144,6 +203,17 @@ func (h *Handler) remove(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// @Summary      Invite friend
+// @Description  Send an app invitation via email or phone
+// @Tags         friends
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        body body friend.InviteRequest true "Email or phone"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/friends/invite [post]
 func (h *Handler) invite(c *gin.Context) {
 	uid, ok := authed(c)
 	if !ok {
