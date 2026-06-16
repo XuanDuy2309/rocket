@@ -2,6 +2,9 @@
 // @version         1.0
 // @description     Rocket backend API — social memory journal
 // @host            localhost:8080
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 package main
 
 import (

@@ -570,4 +570,9 @@ paths:
       summary: WebSocket echo
       tags:
       - system
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
