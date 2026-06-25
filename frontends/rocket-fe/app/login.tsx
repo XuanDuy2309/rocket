@@ -9,7 +9,19 @@ export default function LoginRoute() {
         <AuthScreen
             mode="login"
             onAuthenticated={() => router.replace('/')}
-            onNavigateToMode={() => router.push('/register')}
+            onNavigateToMode={(mode) => {
+                if (mode === 'register') {
+                    router.push('/register');
+                    return;
+                }
+
+                if (mode === 'forgotPassword') {
+                    router.push('/forgot-password');
+                    return;
+                }
+
+                router.replace('/login');
+            }}
         />
     );
 }

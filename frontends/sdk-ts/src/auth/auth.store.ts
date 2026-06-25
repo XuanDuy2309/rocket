@@ -4,6 +4,7 @@ import type {
     AuthFormValuesByMode,
     AuthMode,
     AuthResponse,
+    ForgotPasswordFormState,
     LoginFormState,
     RegisterFormState,
 } from './auth.types';
@@ -18,6 +19,11 @@ const initialRegisterState: RegisterFormState = {
     username: '',
     email: '',
     password: '',
+    error: null,
+};
+
+const initialForgotPasswordState: ForgotPasswordFormState = {
+    email: '',
     error: null,
 };
 
@@ -38,6 +44,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     session: null,
     login: initialLoginState,
     register: initialRegisterState,
+    forgotPassword: initialForgotPasswordState,
     markAuthenticated: (session) =>
         set({
             isLoggedIn: true,
@@ -72,6 +79,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         })),
     resetForm: (mode) =>
         set(() => ({
-            [mode]: mode === 'register' ? initialRegisterState : initialLoginState,
+            [mode]:
+                mode === 'register'
+                    ? initialRegisterState
+                    : mode === 'forgotPassword'
+                      ? initialForgotPasswordState
+                      : initialLoginState,
         })),
 }));

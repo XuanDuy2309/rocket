@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { login, register, validateAuthPayload } from './auth.api';
+import { forgotPassword, login, register, validateAuthPayload } from './auth.api';
 import { useAuthStore } from './auth.store';
-import type { AuthMode } from './auth.types';
+import type { AuthMode, AuthResponse, ForgotPasswordResponse } from './auth.types';
 
 interface UseAuthSubmitOptions {
     onSuccess?: () => void;
@@ -9,6 +9,7 @@ interface UseAuthSubmitOptions {
 
 export function useAuthSubmit(mode: AuthMode, options?: UseAuthSubmitOptions) {
     const values = useAuthStore((state) => state[mode]);
+    const loginValues = useAuthStore((state) => state.login);
     const registerValues = useAuthStore((state) => state.register);
     const clearError = useAuthStore((state) => state.clearError);
     const setError = useAuthStore((state) => state.setError);
@@ -16,7 +17,7 @@ export function useAuthSubmit(mode: AuthMode, options?: UseAuthSubmitOptions) {
     const markAuthenticated = useAuthStore((state) => state.markAuthenticated);
 
     return useMutation({
-        mutationFn: async () => {
+        mutationFn: async (): Promise<AuthResponse | ForgotPasswordResponse> => {
             const message = validateAuthPayload(mode, values);
             if (message) {
                 throw new Error(message);
@@ -30,16 +31,24 @@ export function useAuthSubmit(mode: AuthMode, options?: UseAuthSubmitOptions) {
                 });
             }
 
+            if (mode === 'forgotPassword') {
+                return forgotPassword({
+                    email: values.email,
+                });
+            }
+
             return login({
                 email: values.email,
-                password: values.password,
+                password: loginValues.password,
             });
         },
         onMutate: () => {
             clearError(mode);
         },
-        onSuccess: (session) => {
-            markAuthenticated(session);
+        onSuccess: (result) => {
+            if (mode !== 'forgotPassword') {
+                markAuthenticated(result as AuthResponse);
+            }
             resetForm(mode);
             options?.onSuccess?.();
         },
