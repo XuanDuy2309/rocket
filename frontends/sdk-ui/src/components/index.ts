@@ -4,4 +4,7 @@ export * from './polaroid-card';
 export * from './sparkle-icon';
 export * from './camera-icon';
 export * from './arrow-right-icon';
+export * from './nav-icons';
+export * from './app-nav-bar';
+export * from './main-screen-shell';
 export * from './common';

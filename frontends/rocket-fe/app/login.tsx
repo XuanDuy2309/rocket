@@ -8,7 +8,7 @@ export default function LoginRoute() {
     return (
         <AuthScreen
             mode="login"
-            onAuthenticated={() => router.replace('/')}
+            onAuthenticated={() => router.replace('/(main)/home')}
             onNavigateToMode={(mode) => {
                 if (mode === 'register') {
                     router.push('/register');
