@@ -31,8 +31,31 @@ type SignupRequest struct {
 
 // AuthResponse is the success shape returned by /login and /signup.
 type AuthResponse struct {
-	Token string       `json:"token"`
-	User  PublicUser   `json:"user"`
+	Token string     `json:"token"`
+	User  PublicUser `json:"user"`
+}
+
+// ForgotPasswordSendOTPRequest matches auth.flow.yaml `forgot_password`.
+type ForgotPasswordSendOTPRequest struct {
+	EmailOrPhone string `json:"email_or_phone" binding:"required"`
+}
+
+// ForgotPasswordVerifyOTPRequest matches auth.flow.yaml `verify_otp`.
+type ForgotPasswordVerifyOTPRequest struct {
+	EmailOrPhone string `json:"email_or_phone" binding:"required"`
+	OTP          string `json:"otp" binding:"required,len=6"`
+}
+
+// ForgotPasswordResetRequest matches auth.flow.yaml `reset_password`.
+type ForgotPasswordResetRequest struct {
+	EmailOrPhone string `json:"email_or_phone" binding:"required"`
+	OTP          string `json:"otp" binding:"required,len=6"`
+	NewPassword  string `json:"new_password" binding:"required,min=6"`
+}
+
+// MessageResponse is a generic success payload for OTP flows.
+type MessageResponse struct {
+	Message string `json:"message"`
 }
 
 // PublicUser is the user shape safe to serialize back to clients

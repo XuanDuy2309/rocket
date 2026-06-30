@@ -90,6 +90,32 @@ func (r *Repository) Create(ctx context.Context, userName, email, phone, passwor
 	return &u, nil
 }
 
+// UpdatePasswordHash sets a new bcrypt hash for the user identified by
+// email or phone (exactly one non-empty, same convention as lookup).
+func (r *Repository) UpdatePasswordHash(ctx context.Context, email, phone, passwordHash string) error {
+	var (
+		tag pgconn.CommandTag
+		err error
+	)
+	switch {
+	case email != "":
+		tag, err = r.pool.Exec(ctx,
+			`UPDATE users SET password_hash = $1 WHERE email = $2`, passwordHash, email)
+	case phone != "":
+		tag, err = r.pool.Exec(ctx,
+			`UPDATE users SET password_hash = $1 WHERE phone = $2`, passwordHash, phone)
+	default:
+		return ErrNotFound
+	}
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotFound
+	}
+	return nil
+}
+
 // newUUIDv4 generates an RFC 4122 v4 UUID string without pulling in an
 // external dependency. The `users.id` column is `UUID`, and Postgres
 // accepts the canonical hex-with-hyphens form.

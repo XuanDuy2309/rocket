@@ -59,7 +59,7 @@ func New(cfg config.Config) (*App, error) {
 	}
 
 	authRepo := auth.NewRepository(pgPool)
-	authService := auth.NewService(authRepo, rd, cfg.JWTSecret, defaultTokenTTL)
+	authService := auth.NewService(authRepo, rd, cfg.JWTSecret, defaultTokenTTL, cfg.AppEnv == "development")
 	authHandler := auth.NewHandler(authService)
 
 	media := mediaBaseURL(cfg)

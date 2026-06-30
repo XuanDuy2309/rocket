@@ -24,6 +24,9 @@ type fakeService struct {
 	signupUser *User
 	signupErr  error
 	logoutErr  error
+	sendOTPErr error
+	verifyErr  error
+	resetErr   error
 }
 
 func (f *fakeService) Login(_ context.Context, _ LoginRequest) (string, *User, error) {
@@ -36,6 +39,22 @@ func (f *fakeService) Signup(_ context.Context, _ SignupRequest) (string, *User,
 
 func (f *fakeService) Logout(_ context.Context, _ string, _ time.Time) error {
 	return f.logoutErr
+}
+
+func (f *fakeService) SendForgotPasswordOTP(_ context.Context, _ ForgotPasswordSendOTPRequest) error {
+	return f.sendOTPErr
+}
+
+func (f *fakeService) ResendForgotPasswordOTP(_ context.Context, req ForgotPasswordSendOTPRequest) error {
+	return f.SendForgotPasswordOTP(context.Background(), req)
+}
+
+func (f *fakeService) VerifyForgotPasswordOTP(_ context.Context, _ ForgotPasswordVerifyOTPRequest) error {
+	return f.verifyErr
+}
+
+func (f *fakeService) ResetForgotPassword(_ context.Context, _ ForgotPasswordResetRequest) error {
+	return f.resetErr
 }
 
 func setupRouter(svc authService) *gin.Engine {
@@ -154,6 +173,44 @@ func TestLogoutHandler(t *testing.T) {
 		}
 		if got := decodeErr(t, w).Code; got != codeInternal {
 			t.Errorf("error code = %q, want %q", got, codeInternal)
+		}
+	})
+}
+
+func TestForgotPasswordHandlers(t *testing.T) {
+	t.Run("send otp success", func(t *testing.T) {
+		w := do(setupRouter(&fakeService{}), http.MethodPost, "/api/v1/auth/forgot-password/send-otp",
+			`{"email_or_phone":"a@b.com"}`)
+		if w.Code != http.StatusOK {
+			t.Fatalf("status = %d, want 200 (body %q)", w.Code, w.Body.String())
+		}
+	})
+	t.Run("send otp invalid identifier", func(t *testing.T) {
+		w := do(setupRouter(&fakeService{sendOTPErr: ErrInvalidIdentifier}), http.MethodPost,
+			"/api/v1/auth/forgot-password/send-otp", `{"email_or_phone":"bad"}`)
+		if w.Code != http.StatusBadRequest {
+			t.Fatalf("status = %d, want 400", w.Code)
+		}
+		if got := decodeErr(t, w).Code; got != codeInvalidIdentifier {
+			t.Errorf("error code = %q, want %q", got, codeInvalidIdentifier)
+		}
+	})
+	t.Run("verify otp invalid", func(t *testing.T) {
+		w := do(setupRouter(&fakeService{verifyErr: ErrInvalidOTP}), http.MethodPost,
+			"/api/v1/auth/forgot-password/verify-otp",
+			`{"email_or_phone":"a@b.com","otp":"123456"}`)
+		if w.Code != http.StatusUnauthorized {
+			t.Fatalf("status = %d, want 401", w.Code)
+		}
+		if got := decodeErr(t, w).Code; got != codeInvalidOTP {
+			t.Errorf("error code = %q, want %q", got, codeInvalidOTP)
+		}
+	})
+	t.Run("reset password success", func(t *testing.T) {
+		w := do(setupRouter(&fakeService{}), http.MethodPost, "/api/v1/auth/forgot-password/reset",
+			`{"email_or_phone":"a@b.com","otp":"123456","new_password":"secret1"}`)
+		if w.Code != http.StatusOK {
+			t.Fatalf("status = %d, want 200 (body %q)", w.Code, w.Body.String())
 		}
 	})
 }
