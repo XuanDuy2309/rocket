@@ -1,3 +1,4 @@
+import { apiClient } from '../lib/api-client';
 import type {
     AuthMode,
     AuthResponse,
@@ -7,20 +8,17 @@ import type {
     RegisterPayload,
 } from './auth.types';
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// ── Validation ────────────────────────────────────────────────────────────────
 
-function isValidEmailOrPhone(value: string) {
-    const trimmedValue = value.trim();
-    if (!trimmedValue) {
-        return false;
+function isValidEmailOrPhone(value: string): boolean {
+    const trimmed = value.trim();
+    if (!trimmed) return false;
+
+    if (trimmed.includes('@')) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
     }
 
-    if (trimmedValue.includes('@')) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue);
-    }
-
-    const digits = trimmedValue.replace(/\D/g, '');
-    return digits.length >= 8;
+    return trimmed.replace(/\D/g, '').length >= 8;
 }
 
 export function validateAuthPayload(
@@ -47,53 +45,35 @@ export function validateAuthPayload(
         return 'Mật khẩu là bắt buộc';
     }
 
-    if (mode === 'register' && values.password.trim().length < 6) {
+    if ((mode === 'register' || mode === 'login') && values.password.trim().length < 6) {
         return 'Mật khẩu phải có ít nhất 6 ký tự';
-    }
-
-    if (mode === 'login' && values.password.trim().length < 6) {
-        return 'Mật khẩu cần ít nhất 6 ký tự';
     }
 
     return null;
 }
 
+// ── API Calls ─────────────────────────────────────────────────────────────────
+
+/** POST /api/v1/auth/login */
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
-    await wait(900);
-
-    if (payload.password !== 'Chronology@123') {
-        throw new Error('Mật khẩu không chính xác');
-    }
-
-    return {
-        token: 'demo-login-token',
-        user: {
-            id: 'user-login-demo',
-            username: 'chronology_user',
-            email: payload.email,
-        },
-    };
+    const { data } = await apiClient.post<AuthResponse>('/api/v1/auth/login', payload);
+    return data;
 }
 
+/** POST /api/v1/auth/signup */
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
-    await wait(1100);
-
-    if (!isValidEmailOrPhone(payload.email)) {
-        throw new Error('Email hoặc số điện thoại không hợp lệ');
-    }
-
-    return {
-        token: 'demo-register-token',
-        user: {
-            id: 'user-register-demo',
-            username: payload.username,
-            email: payload.email,
-        },
-    };
+    const { data } = await apiClient.post<AuthResponse>('/api/v1/auth/signup', payload);
+    return data;
 }
 
+/** POST /api/v1/auth/logout — requires Bearer token (sent automatically by interceptor) */
+export async function logout(): Promise<void> {
+    await apiClient.post('/api/v1/auth/logout');
+}
+
+/** Not yet implemented on backend — returns a mock success message */
 export async function forgotPassword(payload: ForgotPasswordPayload): Promise<ForgotPasswordResponse> {
-    await wait(900);
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     if (!isValidEmailOrPhone(payload.email)) {
         throw new Error('Email hoặc số điện thoại không hợp lệ');

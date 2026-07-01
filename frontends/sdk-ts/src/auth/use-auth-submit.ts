@@ -24,21 +24,21 @@ export function useAuthSubmit(mode: AuthMode, options?: UseAuthSubmitOptions) {
             }
 
             if (mode === 'register') {
+                // Map UI field names → backend field names
                 return register({
-                    username: registerValues.username,
-                    email: registerValues.email,
+                    user_name: registerValues.username,
+                    email_or_phone: registerValues.email,
                     password: registerValues.password,
                 });
             }
 
             if (mode === 'forgotPassword') {
-                return forgotPassword({
-                    email: values.email,
-                });
+                return forgotPassword({ email: values.email });
             }
 
+            // login: map email → email_or_phone
             return login({
-                email: values.email,
+                email_or_phone: loginValues.email,
                 password: loginValues.password,
             });
         },
@@ -52,8 +52,14 @@ export function useAuthSubmit(mode: AuthMode, options?: UseAuthSubmitOptions) {
             resetForm(mode);
             options?.onSuccess?.();
         },
-        onError: (error) => {
-            setError(mode, error instanceof Error ? error.message : 'Đã có lỗi xảy ra');
+        onError: (error: unknown) => {
+            // Extract message from axios error response or standard Error
+            let message = 'Đã có lỗi xảy ra';
+            if (error && typeof error === 'object') {
+                const axiosErr = error as { response?: { data?: { message?: string } }; message?: string };
+                message = axiosErr.response?.data?.message ?? axiosErr.message ?? message;
+            }
+            setError(mode, message);
         },
     });
 }
