@@ -2,13 +2,12 @@ import { AuthScreen } from '@rocket/sdk-ui';
 import { useRouter } from 'expo-router';
 import React from 'react';
 
-export default function RegisterRoute() {
+export default function ForgotPasswordRoute() {
     const router = useRouter();
 
     return (
         <AuthScreen
-            mode="register"
-            onAuthenticated={() => router.replace('/')}
+            mode="forgotPassword"
             onNavigateToMode={() => router.replace('/login')}
         />
     );
