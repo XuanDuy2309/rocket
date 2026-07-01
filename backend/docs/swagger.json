@@ -125,6 +125,90 @@
                 }
             }
         },
+        "/api/v1/auth/forgot-password/send-otp": {
+            "post": {
+                "description": "Send a 6-digit verification code to the user's email or phone",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["auth"],
+                "summary": "Send forgot-password OTP",
+                "parameters": [{
+                    "description": "Identifier",
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": { "$ref": "#/definitions/auth.ForgotPasswordSendOTPRequest" }
+                }],
+                "responses": {
+                    "200": { "description": "OK", "schema": { "$ref": "#/definitions/auth.MessageResponse" } },
+                    "400": { "description": "Bad Request", "schema": { "$ref": "#/definitions/response.ErrorBody" } },
+                    "429": { "description": "Too Many Requests", "schema": { "$ref": "#/definitions/response.ErrorBody" } }
+                }
+            }
+        },
+        "/api/v1/auth/forgot-password/resend-otp": {
+            "post": {
+                "description": "Resend the verification code (60s cooldown)",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["auth"],
+                "summary": "Resend forgot-password OTP",
+                "parameters": [{
+                    "description": "Identifier",
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": { "$ref": "#/definitions/auth.ForgotPasswordSendOTPRequest" }
+                }],
+                "responses": {
+                    "200": { "description": "OK", "schema": { "$ref": "#/definitions/auth.MessageResponse" } },
+                    "400": { "description": "Bad Request", "schema": { "$ref": "#/definitions/response.ErrorBody" } },
+                    "429": { "description": "Too Many Requests", "schema": { "$ref": "#/definitions/response.ErrorBody" } }
+                }
+            }
+        },
+        "/api/v1/auth/forgot-password/verify-otp": {
+            "post": {
+                "description": "Validate the 6-digit verification code",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["auth"],
+                "summary": "Verify forgot-password OTP",
+                "parameters": [{
+                    "description": "Verify OTP payload",
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": { "$ref": "#/definitions/auth.ForgotPasswordVerifyOTPRequest" }
+                }],
+                "responses": {
+                    "200": { "description": "OK", "schema": { "$ref": "#/definitions/auth.MessageResponse" } },
+                    "400": { "description": "Bad Request", "schema": { "$ref": "#/definitions/response.ErrorBody" } },
+                    "401": { "description": "Unauthorized", "schema": { "$ref": "#/definitions/response.ErrorBody" } }
+                }
+            }
+        },
+        "/api/v1/auth/forgot-password/reset": {
+            "post": {
+                "description": "Set a new password using a verified OTP",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["auth"],
+                "summary": "Reset password",
+                "parameters": [{
+                    "description": "Reset payload",
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": { "$ref": "#/definitions/auth.ForgotPasswordResetRequest" }
+                }],
+                "responses": {
+                    "200": { "description": "OK", "schema": { "$ref": "#/definitions/auth.MessageResponse" } },
+                    "400": { "description": "Bad Request", "schema": { "$ref": "#/definitions/response.ErrorBody" } },
+                    "401": { "description": "Unauthorized", "schema": { "$ref": "#/definitions/response.ErrorBody" } }
+                }
+            }
+        },
         "/api/v1/friends/invite": {
             "post": {
                 "security": [
@@ -585,6 +669,36 @@
                 "user": {
                     "$ref": "#/definitions/auth.PublicUser"
                 }
+            }
+        },
+        "auth.ForgotPasswordSendOTPRequest": {
+            "type": "object",
+            "required": ["email_or_phone"],
+            "properties": {
+                "email_or_phone": { "type": "string" }
+            }
+        },
+        "auth.ForgotPasswordVerifyOTPRequest": {
+            "type": "object",
+            "required": ["email_or_phone", "otp"],
+            "properties": {
+                "email_or_phone": { "type": "string" },
+                "otp": { "type": "string" }
+            }
+        },
+        "auth.ForgotPasswordResetRequest": {
+            "type": "object",
+            "required": ["email_or_phone", "otp", "new_password"],
+            "properties": {
+                "email_or_phone": { "type": "string" },
+                "otp": { "type": "string" },
+                "new_password": { "type": "string", "minLength": 6 }
+            }
+        },
+        "auth.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": { "type": "string" }
             }
         },
         "auth.LoginRequest": {

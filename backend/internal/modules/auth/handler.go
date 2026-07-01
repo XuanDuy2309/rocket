@@ -18,6 +18,9 @@ const (
 	codeInvalidCredentials = "INVALID_CREDENTIALS"
 	codeInvalidIdentifier  = "INVALID_IDENTIFIER"
 	codeAccountExists      = "ACCOUNT_EXISTS"
+	codeInvalidOTP         = "INVALID_OTP"
+	codeOTPExpired         = "OTP_EXPIRED"
+	codeTooManyRequests    = "TOO_MANY_REQUESTS"
 	codeInternal           = "INTERNAL_ERROR"
 )
 
@@ -28,6 +31,10 @@ type authService interface {
 	Login(ctx context.Context, req LoginRequest) (string, *User, error)
 	Signup(ctx context.Context, req SignupRequest) (string, *User, error)
 	Logout(ctx context.Context, jti string, expiresAt time.Time) error
+	SendForgotPasswordOTP(ctx context.Context, req ForgotPasswordSendOTPRequest) error
+	ResendForgotPasswordOTP(ctx context.Context, req ForgotPasswordSendOTPRequest) error
+	VerifyForgotPasswordOTP(ctx context.Context, req ForgotPasswordVerifyOTPRequest) error
+	ResetForgotPassword(ctx context.Context, req ForgotPasswordResetRequest) error
 }
 
 type Handler struct {
@@ -50,6 +57,10 @@ func (h *Handler) RegisterRoutes(public *gin.RouterGroup, protected *gin.RouterG
 		public.POST("/auth/login", h.login)
 	}
 	public.POST("/auth/signup", h.signup)
+	public.POST("/auth/forgot-password/send-otp", h.sendForgotPasswordOTP)
+	public.POST("/auth/forgot-password/resend-otp", h.resendForgotPasswordOTP)
+	public.POST("/auth/forgot-password/verify-otp", h.verifyForgotPasswordOTP)
+	public.POST("/auth/forgot-password/reset", h.resetForgotPassword)
 	protected.POST("/auth/logout", h.logout)
 }
 
@@ -128,4 +139,124 @@ func (h *Handler) logout(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusNoContent)
+}
+
+const forgotPasswordOTPSentMessage = "Nếu tài khoản tồn tại, mã xác thực đã được gửi"
+
+// @Summary      Send forgot-password OTP
+// @Description  Send a 6-digit verification code to the user's email or phone
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body body auth.ForgotPasswordSendOTPRequest true "Identifier"
+// @Success      200 {object} auth.MessageResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      429 {object} response.ErrorBody
+// @Router       /api/v1/auth/forgot-password/send-otp [post]
+func (h *Handler) sendForgotPasswordOTP(c *gin.Context) {
+	h.handleForgotPasswordOTP(c, false)
+}
+
+// @Summary      Resend forgot-password OTP
+// @Description  Resend the verification code (60s cooldown)
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body body auth.ForgotPasswordSendOTPRequest true "Identifier"
+// @Success      200 {object} auth.MessageResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      429 {object} response.ErrorBody
+// @Router       /api/v1/auth/forgot-password/resend-otp [post]
+func (h *Handler) resendForgotPasswordOTP(c *gin.Context) {
+	h.handleForgotPasswordOTP(c, true)
+}
+
+func (h *Handler) handleForgotPasswordOTP(c *gin.Context, resend bool) {
+	var req ForgotPasswordSendOTPRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, codeInvalidRequest, "Dữ liệu không hợp lệ")
+		return
+	}
+	var err error
+	if resend {
+		err = h.service.ResendForgotPasswordOTP(c.Request.Context(), req)
+	} else {
+		err = h.service.SendForgotPasswordOTP(c.Request.Context(), req)
+	}
+	switch {
+	case errors.Is(err, ErrInvalidIdentifier):
+		response.Error(c, http.StatusBadRequest, codeInvalidIdentifier, "Email hoặc số điện thoại không hợp lệ")
+		return
+	case errors.Is(err, ErrResendCooldown):
+		response.Error(c, http.StatusTooManyRequests, codeTooManyRequests, "Vui lòng đợi trước khi gửi lại mã")
+		return
+	case err != nil:
+		response.Error(c, http.StatusInternalServerError, codeInternal, "Đã có lỗi xảy ra")
+		return
+	}
+	c.JSON(http.StatusOK, MessageResponse{Message: forgotPasswordOTPSentMessage})
+}
+
+// @Summary      Verify forgot-password OTP
+// @Description  Validate the 6-digit verification code
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body body auth.ForgotPasswordVerifyOTPRequest true "Verify OTP payload"
+// @Success      200 {object} auth.MessageResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/auth/forgot-password/verify-otp [post]
+func (h *Handler) verifyForgotPasswordOTP(c *gin.Context) {
+	var req ForgotPasswordVerifyOTPRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, codeInvalidRequest, "Dữ liệu không hợp lệ")
+		return
+	}
+	if err := h.service.VerifyForgotPasswordOTP(c.Request.Context(), req); err != nil {
+		switch {
+		case errors.Is(err, ErrInvalidIdentifier):
+			response.Error(c, http.StatusBadRequest, codeInvalidIdentifier, "Email hoặc số điện thoại không hợp lệ")
+		case errors.Is(err, ErrInvalidOTP):
+			response.Error(c, http.StatusUnauthorized, codeInvalidOTP, "Mã xác thực không đúng")
+		case errors.Is(err, ErrOTPExpired):
+			response.Error(c, http.StatusUnauthorized, codeOTPExpired, "Mã xác thực đã hết hạn")
+		default:
+			response.Error(c, http.StatusInternalServerError, codeInternal, "Đã có lỗi xảy ra")
+		}
+		return
+	}
+	c.JSON(http.StatusOK, MessageResponse{Message: "Mã xác thực hợp lệ"})
+}
+
+// @Summary      Reset password
+// @Description  Set a new password using a verified OTP
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body body auth.ForgotPasswordResetRequest true "Reset payload"
+// @Success      200 {object} auth.MessageResponse
+// @Failure      400 {object} response.ErrorBody
+// @Failure      401 {object} response.ErrorBody
+// @Router       /api/v1/auth/forgot-password/reset [post]
+func (h *Handler) resetForgotPassword(c *gin.Context) {
+	var req ForgotPasswordResetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, codeInvalidRequest, "Dữ liệu không hợp lệ")
+		return
+	}
+	if err := h.service.ResetForgotPassword(c.Request.Context(), req); err != nil {
+		switch {
+		case errors.Is(err, ErrInvalidIdentifier):
+			response.Error(c, http.StatusBadRequest, codeInvalidIdentifier, "Email hoặc số điện thoại không hợp lệ")
+		case errors.Is(err, ErrInvalidOTP):
+			response.Error(c, http.StatusUnauthorized, codeInvalidOTP, "Mã xác thực không đúng")
+		case errors.Is(err, ErrOTPExpired):
+			response.Error(c, http.StatusUnauthorized, codeOTPExpired, "Mã xác thực đã hết hạn")
+		default:
+			response.Error(c, http.StatusInternalServerError, codeInternal, "Đã có lỗi xảy ra")
+		}
+		return
+	}
+	c.JSON(http.StatusOK, MessageResponse{Message: "Đặt lại mật khẩu thành công"})
 }

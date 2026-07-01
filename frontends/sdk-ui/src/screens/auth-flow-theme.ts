@@ -1,0 +1,178 @@
+import { StyleSheet } from 'react-native';
+
+export const authFlowPalette = {
+    background: '#101411',
+    card: 'rgba(50, 54, 50, 0.5)',
+    badge: '#272B27',
+    text: '#E0E3DE',
+    muted: '#869585',
+    subtle: 'rgba(134, 149, 133, 0.4)',
+    accent: '#4BE277',
+    accentDark: '#002109',
+    danger: '#FFB4AE',
+    border: 'rgba(255,255,255,0.08)',
+    errorBorder: 'rgba(255, 180, 174, 0.45)',
+    link: '#869585',
+};
+
+export const authFlowStyles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: authFlowPalette.background,
+    },
+    scroll: {
+        flex: 1,
+        backgroundColor: authFlowPalette.background,
+    },
+    content: {
+        flexGrow: 1,
+        paddingHorizontal: 32,
+        paddingTop: 32,
+        paddingBottom: 42,
+    },
+    topGlow: {
+        position: 'absolute',
+        top: -20,
+        left: -138,
+        width: 600,
+        height: 600,
+        borderRadius: 300,
+        backgroundColor: 'rgba(75, 226, 119, 0.05)',
+    },
+    topGlowSecondary: {
+        position: 'absolute',
+        top: 120,
+        right: -80,
+        width: 400,
+        height: 400,
+        borderRadius: 200,
+        backgroundColor: 'rgba(75, 226, 119, 0.1)',
+    },
+    badge: {
+        width: 56,
+        height: 45,
+        borderRadius: 16,
+        backgroundColor: authFlowPalette.badge,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: authFlowPalette.accent,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+    },
+    badgeIcon: {
+        color: authFlowPalette.accent,
+        fontSize: 22,
+    },
+    headingBlock: {
+        marginTop: 16,
+        paddingTop: 24,
+    },
+    title: {
+        color: authFlowPalette.text,
+        fontSize: 40,
+        lineHeight: 44,
+        fontWeight: '800',
+        letterSpacing: -1,
+    },
+    titleAccent: {
+        color: authFlowPalette.accent,
+    },
+    subtitle: {
+        marginTop: 16,
+        color: authFlowPalette.muted,
+        fontSize: 18,
+        lineHeight: 29,
+        maxWidth: 260,
+    },
+    form: {
+        marginTop: 40,
+        gap: 40,
+    },
+    formGroup: {
+        gap: 8,
+    },
+    formLabel: {
+        color: authFlowPalette.muted,
+        fontSize: 11,
+        fontWeight: '600',
+        letterSpacing: 1.1,
+        textTransform: 'uppercase',
+    },
+    input: {
+        width: '100%',
+        minHeight: 64,
+        borderRadius: 16,
+        backgroundColor: authFlowPalette.card,
+        paddingHorizontal: 24,
+        paddingVertical: 23,
+        color: authFlowPalette.text,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: authFlowPalette.border,
+    },
+    inputError: {
+        borderColor: authFlowPalette.errorBorder,
+    },
+    otpInput: {
+        letterSpacing: 12,
+        textAlign: 'center',
+        fontSize: 28,
+        fontWeight: '700',
+    },
+    passwordInput: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    passwordField: {
+        flex: 1,
+        color: authFlowPalette.text,
+        fontSize: 16,
+    },
+    eyeText: {
+        color: authFlowPalette.muted,
+        fontSize: 22,
+    },
+    errorText: {
+        marginTop: 8,
+        color: authFlowPalette.danger,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    submitButton: {
+        width: '100%',
+        height: 62,
+        borderRadius: 999,
+        marginTop: 0,
+        shadowColor: authFlowPalette.accent,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.25,
+        shadowRadius: 16,
+        elevation: 10,
+    },
+    backRow: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 40,
+        gap: 12,
+    },
+    backText: {
+        color: authFlowPalette.link,
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    resendText: {
+        color: authFlowPalette.muted,
+        fontSize: 15,
+        textAlign: 'center',
+        marginTop: 24,
+    },
+    resendAction: {
+        color: authFlowPalette.accent,
+        fontWeight: '700',
+    },
+    resendDisabled: {
+        opacity: 0.5,
+    },
+});

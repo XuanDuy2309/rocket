@@ -16,6 +16,7 @@ interface AuthScreenProps {
     mode: AuthMode;
     onAuthenticated?: () => void;
     onNavigateToMode?: (mode: AuthMode) => void;
+    onForgotPassword?: () => void;
 }
 
 type AuthCopy = {
@@ -71,7 +72,7 @@ const authCopy: Record<AuthMode, AuthCopy> = {
     },
 };
 
-export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScreenProps) {
+export function AuthScreen({ mode, onAuthenticated, onNavigateToMode, onForgotPassword }: AuthScreenProps) {
     const [secureTextEntry, setSecureTextEntry] = useState(true);
     const loginValues = useAuthStore((state) => state.login);
     const registerValues = useAuthStore((state) => state.register);
@@ -255,6 +256,7 @@ export function AuthScreen({ mode, onAuthenticated, onNavigateToMode }: AuthScre
                                 <Text style={styles.loginSubtitle}>{copy.subtitle}</Text>
                             </View>
                         </>
+
                     ) : (
                         <View style={styles.authHeader}>
                             <View style={[styles.headerBadge, isForgotPassword && styles.headerBadgeLarge]}>

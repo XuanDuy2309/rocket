@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { getItem } from './storage';
 
-const BASE_URL = 'http://localhost:8080';
+const API_BASE_URL =
+    (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) ||
+    'http://localhost:8080/api/v1';
 
 export const apiClient = axios.create({
-    baseURL: BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    baseURL: API_BASE_URL,
+    headers: { 'Content-Type': 'application/json' },
+    timeout: 15000,
 });
 
 // Attach Bearer token automatically on every request
@@ -18,3 +19,21 @@ apiClient.interceptors.request.use((config) => {
     }
     return config;
 });
+
+interface ApiErrorBody {
+    code?: string;
+    message?: string;
+}
+
+export function getApiErrorMessage(error: unknown, fallback = 'Đã có lỗi xảy ra'): string {
+    if (axios.isAxiosError(error)) {
+        const data = error.response?.data as ApiErrorBody | undefined;
+        if (data?.message) {
+            return data.message;
+        }
+    }
+    if (error instanceof Error && error.message) {
+        return error.message;
+    }
+    return fallback;
+}

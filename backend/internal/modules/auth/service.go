@@ -29,10 +29,11 @@ type Service struct {
 	redis    *redis.Client
 	secret   string
 	tokenTTL time.Duration
+	devMode  bool
 }
 
-func NewService(repo *Repository, rdb *redis.Client, secret string, tokenTTL time.Duration) *Service {
-	return &Service{repo: repo, redis: rdb, secret: secret, tokenTTL: tokenTTL}
+func NewService(repo *Repository, rdb *redis.Client, secret string, tokenTTL time.Duration, devMode bool) *Service {
+	return &Service{repo: repo, redis: rdb, secret: secret, tokenTTL: tokenTTL, devMode: devMode}
 }
 
 // Login validates credentials and returns a fresh token + public user.
